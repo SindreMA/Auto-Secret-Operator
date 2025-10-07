@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-secret-operator
+  namespace: db-secret-operator-system
+  labels:
+    app: db-secret-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-secret-operator
+  template:
+    metadata:
+      labels:
+        app: db-secret-operator
+    spec:
+      serviceAccountName: db-secret-operator
+      containers:
+      - name: manager
+        image: sindrema/db-secret-operator:3
+        imagePullPolicy: IfNotPresent
+        command:
+        - /manager
+        args:
+        - --leader-elect
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 65532
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        runAsNonRoot: true
+      terminationGracePeriodSeconds: 10
