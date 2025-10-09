@@ -11,8 +11,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 
-	autosecretv1alpha1 "github.com/yourusername/db-secret-operator/api/v1alpha1"
-	"github.com/yourusername/db-secret-operator/controllers"
+	autosecretv1alpha1 "github.com/SindreMA/auto-secret-operator/api/v1alpha1"
+	"github.com/SindreMA/auto-secret-operator/controllers"
 )
 
 var (
@@ -48,18 +48,34 @@ func main() {
 		Scheme:                 scheme,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
-		LeaderElectionID:       "db-secret-operator.cnpg-secret-generator.io",
+		LeaderElectionID:       "auto-secret-operator.auto-secret.io",
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
 
-	if err = (&controllers.AutoSecretReconciler{
+	if err = (&controllers.AutoSecretBasicReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "AutoSecret")
+		setupLog.Error(err, "unable to create controller", "controller", "AutoSecretBasic")
+		os.Exit(1)
+	}
+
+	if err = (&controllers.AutoSecretDbReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AutoSecretDb")
+		os.Exit(1)
+	}
+
+	if err = (&controllers.AutoSecretGuidReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AutoSecretGuid")
 		os.Exit(1)
 	}
 

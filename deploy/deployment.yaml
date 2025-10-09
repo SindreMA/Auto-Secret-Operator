@@ -1,29 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-secret-operator
-  namespace: db-secret-operator-system
+  name: auto-secret-operator
+  namespace: auto-secret-operator
   labels:
-    app: db-secret-operator
+    app: auto-secret-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db-secret-operator
+      app: auto-secret-operator
   template:
     metadata:
       labels:
-        app: db-secret-operator
+        app: auto-secret-operator
     spec:
-      serviceAccountName: db-secret-operator
+      serviceAccountName: auto-secret-operator
       containers:
       - name: manager
-        image: sindrema/db-secret-operator:3
+        image: sindrema/auto-secret-operator:0.1.9
         imagePullPolicy: IfNotPresent
         command:
         - /manager
         args:
         - --leader-elect
+        ports:
+        - containerPort: 8080
+          name: metrics
+          protocol: TCP
+        - containerPort: 8081
+          name: health
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
         resources:
           limits:
             cpu: 500m
@@ -31,18 +50,6 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        readinessProbe:
-          httpGet:
-            path: /readyz
-            port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 10
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -50,8 +57,4 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 65532
-          seccompProfile:
-            type: RuntimeDefault
-      securityContext:
-        runAsNonRoot: true
-      terminationGracePeriodSeconds: 10
+          readOnlyRootFilesystem: true

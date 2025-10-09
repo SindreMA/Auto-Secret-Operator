@@ -1,4 +1,4 @@
-module github.com/yourusername/db-secret-operator
+module github.com/SindreMA/auto-secret-operator
 
 go 1.21
 
