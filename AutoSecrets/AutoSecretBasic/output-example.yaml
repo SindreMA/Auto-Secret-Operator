@@ -1,0 +1,12 @@
+
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/basic-auth
+metadata:
+  name: custom-myapp-user
+  namespace: mynamespace
+  annotations:
+    creationTimestamp: "2025-09-11T13:02:05Z"
+data:
+  password: PASSWORD
+  username: myapp-random-user

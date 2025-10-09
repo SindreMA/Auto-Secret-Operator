@@ -1,0 +1,16 @@
+apiVersion: auto-secret.io/v1alpha1
+kind: AutoSecretDb
+metadata:
+  name: myapp-db-readonly
+  namespace: mynamespace
+spec:
+  username: myapp-db-user
+  dbname: myapp_db
+  dbhost: postgres-cluster.svc.cluster.local
+  # port: 5432  # optional, defaults to 5432
+  # passwordLength: 16  # optional, defaults to 12
+  # passwordCharset: "alphanumeric"  # optional, defaults to "alphanumeric", other options: "ascii-printable", "hex", "base64"
+  # dbType: "postgresql"  # optional, defaults to "postgresql"
+  # additionalParams: "?sslmode=require"  # optional, additional connection parameters
+  # secretName: "custom-secret-name"  # optional, defaults to <name>
+

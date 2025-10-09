@@ -1,0 +1,10 @@
+apiVersion: auto-secret.io/v1alpha1
+kind: AutoSecretBasic
+metadata:
+  name: custom-myapp-user
+  namespace: mynamespace
+spec:
+  username: myapp-random-user
+  # passwordLength: 16  # optional, defaults to 12
+  # passwordCharset: "alphanumeric"  # optional, defaults to "alphanumeric", other options: "ascii-printable", "hex", "base64"
+  # secretName: "custom-secret-name"  # optional, defaults to <name>

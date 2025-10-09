@@ -1,0 +1,8 @@
+apiVersion: auto-secret.io/v1alpha1
+kind: AutoSecretDb
+metadata:
+  name: custom-guid-secret
+  namespace: mynamespace
+spec:
+  # format: defaults to uuidv4, other options: short-uuid, uuidv7
+  # secretName: "custom-secret-name"  # optional, defaults to <name>
