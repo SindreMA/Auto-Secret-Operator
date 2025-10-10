@@ -90,6 +90,22 @@ func (r *AutoSecretGuidReconciler) reconcileSecret(ctx context.Context, autoSecr
 		// Secret exists, check if guid is already set
 		if existingGuid, hasGuid := existingSecret.Data["guid"]; hasGuid {
 			log.Info("Secret already exists with guid", "name", secretName)
+			// Still update labels and annotations
+			if existingSecret.Labels == nil {
+				existingSecret.Labels = make(map[string]string)
+			}
+			for k, v := range autoSecretGuid.Labels {
+				existingSecret.Labels[k] = v
+			}
+			if existingSecret.Annotations == nil {
+				existingSecret.Annotations = make(map[string]string)
+			}
+			for k, v := range autoSecretGuid.Annotations {
+				existingSecret.Annotations[k] = v
+			}
+			if err := r.Update(ctx, &existingSecret); err != nil {
+				return "", fmt.Errorf("failed to update secret metadata: %w", err)
+			}
 			return string(existingGuid), nil
 		}
 		// Secret exists but no guid, generate one
@@ -99,6 +115,19 @@ func (r *AutoSecretGuidReconciler) reconcileSecret(ctx context.Context, autoSecr
 		}
 		existingSecret.Data = map[string][]byte{
 			"guid": []byte(guid),
+		}
+		// Copy labels and annotations from AutoSecretGuid to Secret
+		if existingSecret.Labels == nil {
+			existingSecret.Labels = make(map[string]string)
+		}
+		for k, v := range autoSecretGuid.Labels {
+			existingSecret.Labels[k] = v
+		}
+		if existingSecret.Annotations == nil {
+			existingSecret.Annotations = make(map[string]string)
+		}
+		for k, v := range autoSecretGuid.Annotations {
+			existingSecret.Annotations[k] = v
 		}
 		if err := r.Update(ctx, &existingSecret); err != nil {
 			return "", fmt.Errorf("failed to update secret: %w", err)
@@ -119,13 +148,23 @@ func (r *AutoSecretGuidReconciler) reconcileSecret(ctx context.Context, autoSecr
 
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      secretName,
-			Namespace: autoSecretGuid.Namespace,
+			Name:        secretName,
+			Namespace:   autoSecretGuid.Namespace,
+			Labels:      make(map[string]string),
+			Annotations: make(map[string]string),
 		},
 		Type: corev1.SecretTypeOpaque,
 		Data: map[string][]byte{
 			"guid": []byte(guid),
 		},
+	}
+
+	// Copy labels and annotations from AutoSecretGuid to Secret
+	for k, v := range autoSecretGuid.Labels {
+		secret.Labels[k] = v
+	}
+	for k, v := range autoSecretGuid.Annotations {
+		secret.Annotations[k] = v
 	}
 
 	// Set owner reference
