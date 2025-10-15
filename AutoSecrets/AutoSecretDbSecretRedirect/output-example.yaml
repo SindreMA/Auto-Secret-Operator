@@ -1,0 +1,45 @@
+# This is the output secret created by AutoSecretDbSecretRedirect
+# It reads the source secret (myapp-db-readonly) and transforms its URI
+# into multiple connection string formats
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: myapp-db-secret-redirect
+  namespace: mynamespace
+  annotations:
+    creationTimestamp: "2025-09-11T13:02:05Z"
+  ownerReferences:
+  - apiVersion: auto-secret.io/v1alpha1
+    kind: AutoSecretDbSecretRedirect
+    name: myapp-db-secret-redirect
+    controller: true
+data:
+  # Original URI from source secret
+  uri: postgresql://myapp-db-user:PASSWORD@postgres-cluster.svc.cluster.local:5432/myapp_db
+  original-uri: postgresql://myapp-db-user:PASSWORD@postgres-cluster.svc.cluster.local:5432/myapp_db
+
+  # Microsoft SQL Server style connection string (works with Npgsql .NET provider)
+  ms-uri: Server=postgres-cluster.svc.cluster.local;Port=5432;Database=myapp_db;User Id=myapp-db-user;Password=PASSWORD;
+
+  # ODBC connection string
+  odbc-uri: Driver={PostgreSQL Unicode};Server=postgres-cluster.svc.cluster.local;Port=5432;Database=myapp_db;Uid=myapp-db-user;Pwd=PASSWORD;
+
+  # ADO.NET connection string (Npgsql format)
+  adonet-uri: Host=postgres-cluster.svc.cluster.local;Port=5432;Database=myapp_db;Username=myapp-db-user;Password=PASSWORD;
+
+  # JDBC connection string
+  jdbc-uri: jdbc:postgresql://postgres-cluster.svc.cluster.local:5432/myapp_db?user=myapp-db-user&password=PASSWORD
+
+  # Individual components
+  username: myapp-db-user
+  password: PASSWORD
+  host: postgres-cluster.svc.cluster.local
+  port: "5432"
+  dbname: myapp_db
+
+  # Fields copied from source secret if they exist
+  fqdn-uri: postgresql://myapp-db-user:PASSWORD@postgres-cluster.svc.cluster.local:5432/myapp_db
+  fqdn-jdbc-uri: jdbc:postgresql://postgres-cluster.svc.cluster.local:5432/myapp_db?password=PASSWORD&user=myapp-db-user
+  pgpass: postgres-cluster:5432:myapp_db:myapp-db-user:PASSWORD
+  user: myapp-db-user

@@ -1,0 +1,7 @@
+apiVersion: auto-secret.io/v1alpha1
+kind: AutoSecretDbSecretRedirect
+metadata:
+  name: myapp-db-secret-redirect
+  namespace: mynamespace
+spec:
+  secretname: myapp-db-readonly
