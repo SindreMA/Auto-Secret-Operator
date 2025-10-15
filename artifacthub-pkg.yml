@@ -1,0 +1,96 @@
+# Artifact Hub package metadata file
+# https://github.com/artifacthub/hub/blob/master/docs/metadata/artifacthub-pkg.yml
+
+version: 0.1.15
+name: auto-secret-operator
+displayName: Auto Secret Operator
+createdAt: "2024-01-15T00:00:00Z"
+description: Kubernetes operator that automatically generates secrets with passwords, database credentials, and GUIDs
+
+# Logo for the package (optional, use a publicly accessible URL)
+# logoURL: https://raw.githubusercontent.com/yourusername/auto-secret-operator/main/logo.png
+
+appVersion: 0.1.15
+home: https://github.com/sindrema/auto-secret-operator
+keywords:
+  - kubernetes
+  - operator
+  - secrets
+  - passwords
+  - database
+  - credentials
+  - security
+  - automation
+
+maintainers:
+  - name: sindrema
+    email: your-email@example.com
+
+operator: true
+deprecated: false
+
+license: Apache-2.0
+
+links:
+  - name: Source Code
+    url: https://github.com/sindrema/auto-secret-operator
+  - name: Documentation
+    url: https://github.com/sindrema/auto-secret-operator/blob/main/README.md
+  - name: Helm Installation Guide
+    url: https://github.com/sindrema/auto-secret-operator/blob/main/HELM-INSTALL.md
+
+# Installation instructions shown on Artifact Hub
+install: |
+  ## Prerequisites
+  - Kubernetes 1.19+
+  - Helm 3.0+
+
+  ## Install
+  ```bash
+  helm repo add auto-secret-operator https://sindrema.github.io/auto-secret-operator
+  helm repo update
+  helm install auto-secret-operator auto-secret-operator/auto-secret-operator
+  ```
+
+# Security information
+recommendations:
+  - url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+
+# Changes in this version
+changes:
+  - kind: added
+    description: Initial release with AutoSecretBasic, AutoSecretDb, and AutoSecretGuid support
+  - kind: added
+    description: Multi-architecture support (amd64, arm64)
+
+# Screenshots (optional)
+# screenshots:
+#   - title: Dashboard view
+#     url: https://example.com/screenshot1.png
+
+# CRDs
+crds:
+  - kind: AutoSecretBasic
+    version: v1alpha1
+    name: autosecretbasics.auto-secret.io
+    displayName: Auto Secret Basic
+    description: Generate username/password secrets automatically
+  - kind: AutoSecretDb
+    version: v1alpha1
+    name: autosecretdbs.auto-secret.io
+    displayName: Auto Secret Database
+    description: Generate database connection secrets with URIs
+  - kind: AutoSecretGuid
+    version: v1alpha1
+    name: autosecretguids.auto-secret.io
+    displayName: Auto Secret GUID
+    description: Generate UUID/GUID secrets
+
+# Operator capabilities
+# https://sdk.operatorframework.io/docs/overview/operator-capabilities/
+capabilities: Basic Install
+
+# Container images used by this package
+containersImages:
+  - name: auto-secret-operator
+    image: sindrema/auto-secret-operator:0.1.15

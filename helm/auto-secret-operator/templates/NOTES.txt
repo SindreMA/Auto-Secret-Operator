@@ -1,0 +1,45 @@
+﻿Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+The Auto Secret Operator has been deployed to namespace: {{ .Values.namespace }}
+
+To verify the deployment:
+  kubectl get pods -n {{ .Values.namespace }}
+
+To create an AutoSecretBasic:
+  kubectl apply -f - <<EOF
+  apiVersion: auto-secret.io/v1alpha1
+  kind: AutoSecretBasic
+  metadata:
+    name: my-basic-secret
+    namespace: default
+  spec:
+    username: myuser
+  EOF
+
+To create an AutoSecretDb:
+  kubectl apply -f - <<EOF
+  apiVersion: auto-secret.io/v1alpha1
+  kind: AutoSecretDb
+  metadata:
+    name: my-db-secret
+    namespace: default
+  spec:
+    username: dbuser
+    dbname: mydb
+    dbhost: postgres.default.svc.cluster.local
+  EOF
+
+To create an AutoSecretGuid:
+  kubectl apply -f - <<EOF
+  apiVersion: auto-secret.io/v1alpha1
+  kind: AutoSecretGuid
+  metadata:
+    name: my-guid-secret
+    namespace: default
+  spec:
+    format: uuidv4
+  EOF
+
+For more information, visit: https://github.com/sindrema/auto-secret-operator

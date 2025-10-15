@@ -1,0 +1,7 @@
+# Artifact Hub Repository Metadata
+# https://github.com/artifacthub/hub/blob/master/docs/metadata/artifacthub-repo.yml
+
+repositoryID: auto-secret-operator
+owners:
+  - name: sindrema
+    email: your-email@example.com

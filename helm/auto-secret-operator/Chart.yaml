@@ -1,0 +1,15 @@
+﻿apiVersion: v2
+name: auto-secret-operator
+description: A Kubernetes operator that automatically generates secrets with passwords, database credentials, and GUIDs
+type: application
+version: 0.1.0
+appVersion: "0.1.15"
+keywords:
+  - kubernetes
+  - operator
+  - secrets
+  - passwords
+  - database
+maintainers:
+  - name: sindrema
+home: https://github.com/sindrema/auto-secret-operator

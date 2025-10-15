@@ -1,8 +1,35 @@
 # Auto Secret Operator
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/auto-secret-operator)](https://artifacthub.io/packages/helm/auto-secret-operator/auto-secret-operator)
+
 Kubernetes operator that automatically generates secrets with passwords, database credentials, and GUIDs.
 
 ## Installation
+
+### Using Helm from Artifact Hub (Easiest)
+
+```bash
+# Add the Helm repository
+helm repo add auto-secret-operator https://sindrema.github.io/auto-secret-operator
+helm repo update
+
+# Install the operator
+helm install auto-secret-operator auto-secret-operator/auto-secret-operator
+```
+
+### Using Helm from source
+
+```bash
+# Setup Helm chart (first time only)
+./setup-helm-chart.ps1
+
+# Install with Helm
+helm install auto-secret-operator ./helm/auto-secret-operator
+```
+
+See [HELM-INSTALL.md](HELM-INSTALL.md) for detailed Helm installation options.
+
+### Using kubectl
 
 ```bash
 ./deploy.sh
