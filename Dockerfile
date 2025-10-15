@@ -1,6 +1,10 @@
 # Build stage
 FROM golang:1.21-alpine AS builder
 
+# Set build arguments for multi-arch support
+ARG TARGETOS
+ARG TARGETARCH
+
 WORKDIR /workspace
 
 # Copy go mod files
@@ -16,7 +20,7 @@ COPY api/ api/
 COPY controllers/ controllers/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o manager main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager main.go
 
 # Runtime stage
 FROM gcr.io/distroless/static:nonroot

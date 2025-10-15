@@ -3,6 +3,8 @@ kind: AutoSecretDb
 metadata:
   name: myapp-db-readonly
   namespace: mynamespace
+  labels:
+        cnpg.io/reload: "true"
 spec:
   username: myapp-db-user
   dbname: myapp_db

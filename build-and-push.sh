@@ -29,21 +29,18 @@ echo "New version: $VERSION"
 # Update VERSION file
 echo "$VERSION" > "$VERSION_FILE"
 
-echo "Building Docker image with version: $VERSION"
+echo "Building multi-architecture Docker image with version: $VERSION"
 
-# Build the Docker image with version tag
-docker build -t ${IMAGE_NAME}:${VERSION} .
+# Create buildx builder if it doesn't exist
+docker buildx create --name multiarch-builder --use 2>/dev/null || docker buildx use multiarch-builder || true
 
-# Tag the image as latest
-docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
-
-echo "Pushing Docker images to registry..."
-
-# Push version tag
-docker push ${IMAGE_NAME}:${VERSION}
-
-# Push latest tag
-docker push ${IMAGE_NAME}:latest
+# Build and push multi-architecture image (amd64 and arm64)
+docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    -t ${IMAGE_NAME}:${VERSION} \
+    -t ${IMAGE_NAME}:latest \
+    --push \
+    .
 
 echo "Successfully built and pushed:"
 echo "  - ${IMAGE_NAME}:${VERSION}"

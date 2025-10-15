@@ -86,6 +86,22 @@ func (r *AutoSecretBasicReconciler) reconcileSecret(ctx context.Context, autoSec
 		// Secret exists, check if password is already set
 		if _, hasPassword := existingSecret.Data["password"]; hasPassword {
 			log.Info("Secret already exists with password", "name", secretName)
+			// Still update labels and annotations
+			if existingSecret.Labels == nil {
+				existingSecret.Labels = make(map[string]string)
+			}
+			for k, v := range autoSecretBasic.Labels {
+				existingSecret.Labels[k] = v
+			}
+			if existingSecret.Annotations == nil {
+				existingSecret.Annotations = make(map[string]string)
+			}
+			for k, v := range autoSecretBasic.Annotations {
+				existingSecret.Annotations[k] = v
+			}
+			if err := r.Update(ctx, &existingSecret); err != nil {
+				return fmt.Errorf("failed to update secret metadata: %w", err)
+			}
 			return nil
 		}
 		// Secret exists but no password, update it
@@ -96,6 +112,19 @@ func (r *AutoSecretBasicReconciler) reconcileSecret(ctx context.Context, autoSec
 		existingSecret.Data = map[string][]byte{
 			"username": []byte(autoSecretBasic.Spec.Username),
 			"password": []byte(password),
+		}
+		// Copy labels and annotations from AutoSecretBasic to Secret
+		if existingSecret.Labels == nil {
+			existingSecret.Labels = make(map[string]string)
+		}
+		for k, v := range autoSecretBasic.Labels {
+			existingSecret.Labels[k] = v
+		}
+		if existingSecret.Annotations == nil {
+			existingSecret.Annotations = make(map[string]string)
+		}
+		for k, v := range autoSecretBasic.Annotations {
+			existingSecret.Annotations[k] = v
 		}
 		if err := r.Update(ctx, &existingSecret); err != nil {
 			return fmt.Errorf("failed to update secret: %w", err)
@@ -116,14 +145,24 @@ func (r *AutoSecretBasicReconciler) reconcileSecret(ctx context.Context, autoSec
 
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      secretName,
-			Namespace: autoSecretBasic.Namespace,
+			Name:        secretName,
+			Namespace:   autoSecretBasic.Namespace,
+			Labels:      make(map[string]string),
+			Annotations: make(map[string]string),
 		},
 		Type: corev1.SecretTypeBasicAuth,
 		Data: map[string][]byte{
 			"username": []byte(autoSecretBasic.Spec.Username),
 			"password": []byte(password),
 		},
+	}
+
+	// Copy labels and annotations from AutoSecretBasic to Secret
+	for k, v := range autoSecretBasic.Labels {
+		secret.Labels[k] = v
+	}
+	for k, v := range autoSecretBasic.Annotations {
+		secret.Annotations[k] = v
 	}
 
 	// Set owner reference

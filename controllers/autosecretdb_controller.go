@@ -111,6 +111,19 @@ func (r *AutoSecretDbReconciler) reconcileSecret(ctx context.Context, autoSecret
 	if err == nil {
 		// Update existing secret
 		existingSecret.Data = secretData
+		// Copy labels and annotations from AutoSecretDb to Secret
+		if existingSecret.Labels == nil {
+			existingSecret.Labels = make(map[string]string)
+		}
+		for k, v := range autoSecretDb.Labels {
+			existingSecret.Labels[k] = v
+		}
+		if existingSecret.Annotations == nil {
+			existingSecret.Annotations = make(map[string]string)
+		}
+		for k, v := range autoSecretDb.Annotations {
+			existingSecret.Annotations[k] = v
+		}
 		if err := r.Update(ctx, &existingSecret); err != nil {
 			return fmt.Errorf("failed to update secret: %w", err)
 		}
@@ -119,11 +132,21 @@ func (r *AutoSecretDbReconciler) reconcileSecret(ctx context.Context, autoSecret
 		// Create new secret
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      secretName,
-				Namespace: autoSecretDb.Namespace,
+				Name:        secretName,
+				Namespace:   autoSecretDb.Namespace,
+				Labels:      make(map[string]string),
+				Annotations: make(map[string]string),
 			},
 			Type: corev1.SecretTypeBasicAuth,
 			Data: secretData,
+		}
+
+		// Copy labels and annotations from AutoSecretDb to Secret
+		for k, v := range autoSecretDb.Labels {
+			secret.Labels[k] = v
+		}
+		for k, v := range autoSecretDb.Annotations {
+			secret.Annotations[k] = v
 		}
 
 		// Set owner reference
